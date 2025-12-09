@@ -1,0 +1,52 @@
+
+> backend@1.0.0 dev
+> node index.js
+
+[dotenv@17.2.3] injecting env (9) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+Server running on port 5000
+Incoming Registration Payload: {
+  email: 'stateadmin_1765260932052@example.com',
+  password: 'Password@123',
+  roleId: 5,
+  firstname: 'Test',
+  lastname: 'Admin',
+  state: 'Maharashtra'
+}
+PostgreSQL pool connected
+Generated Unique User ID: 133311095
+REGISTRATION ERROR: error: column "first_name" of relation "state_admin" does not exist
+    at C:\Users\Harsh\Desktop\SIH\Prashiskshan-main-new-integration\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async exports.registerUser (C:\Users\Harsh\Desktop\SIH\Prashiskshan-main-new-integration\backend\controllers\auth.controller.js:116:9) {
+  length: 134,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '41',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_target.c',
+  line: '1065',
+  routine: 'checkInsertTargets'
+}
+Incoming Registration Payload: {
+  email: 'stateadmin_1765260998614@example.com',
+  password: 'Password@123',
+  roleId: 5,
+  firstname: 'Test',
+  lastname: 'Admin',
+  state: 'Maharashtra'
+}
+PostgreSQL pool connected
+Generated Unique User ID: 417834442
+i am being hit
+
+C:\Users\Harsh\Desktop\SIH\Prashiskshan-main-new-integration\backend>More? 

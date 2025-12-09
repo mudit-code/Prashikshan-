@@ -1,0 +1,12 @@
+Column Name | Data Type | Nullable
+---|---|---
+created_at | timestamp without time zone | YES
+id | integer | NO
+email | character varying | YES
+mobile_number | character varying | YES
+roll_no | character varying | YES
+student_name | character varying | YES
+course | character varying | YES
+current_year | character varying | YES
+section | character varying | YES
+college_name | character varying | NO

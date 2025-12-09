@@ -1,0 +1,5 @@
+{
+  "email": "stateadmin_1765260998614@example.com",
+  "first_name": "Test",
+  "state": "Maharashtra"
+}
