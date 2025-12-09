@@ -1,0 +1,9 @@
+node_modules
+.next
+bucket
+out
+dist
+build
+.env
+.DS_Store
+*.log

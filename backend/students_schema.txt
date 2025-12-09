@@ -1,0 +1,11 @@
+Column Name | Data Type | Nullable
+---|---|---
+id | integer | NO
+college_id | integer | YES
+profile_data | jsonb | YES
+last_name | character varying | YES
+college_name | character varying | YES
+roll_no | character varying | YES
+status | character varying | YES
+first_name | character varying | YES
+mid_name | character varying | YES

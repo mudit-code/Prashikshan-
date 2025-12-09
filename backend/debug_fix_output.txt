@@ -1,0 +1,34 @@
+﻿[dotenv@17.2.3] injecting env (9) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+PostgreSQL pool connected
+
+--- Improved Query Result ---
+PostgreSQL pool connected
+Total Colleges Found: 44
+First 5 colleges:
+[
+  {
+    "id": 1,
+    "collegeName": "abs",
+    "aisheCode": null
+  },
+  {
+    "id": 28,
+    "collegeName": "Aligarh Muslim University",
+    "aisheCode": null
+  },
+  {
+    "id": 20,
+    "collegeName": "Amity University",
+    "aisheCode": null
+  },
+  {
+    "id": 14,
+    "collegeName": "Anna University",
+    "aisheCode": null
+  },
+  {
+    "id": 29,
+    "collegeName": "Banaras Hindu University",
+    "aisheCode": null
+  }
+]
