@@ -17,6 +17,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3001",
   "http://localhost:3000",
+  "https://prashikshan-omega.vercel.app",
   "https://your-frontend-domain.vercel.app",
   "https://prashiskshan-main-new-integration-six.vercel.app",
   "https://prashiskshan-main-new-in-git-642e5b-abhisheks-projects-680a2fd9.vercel.app",
