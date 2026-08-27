@@ -13,7 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className={styles.layout}>
       {!isDashboard && <Navbar />}
       <main className={styles.main}>{children}</main>
-      <Footer />
+      {!isDashboard && <Footer />}
     </div>
   );
 };

@@ -35,16 +35,7 @@ const withAuth = <P extends object>(
       const checkAuth = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
-          // Temporary: Skip auth check
-          setUserId('temp-user');
-          setRole('Student');
-          setUser({
-            id: 1,
-            name: 'Temporary User',
-            email: '123',
-            role: { id: 1, name: 'Student' }
-          });
-          setLoading(false);
+          router.push('/login');
           return;
         }
 
