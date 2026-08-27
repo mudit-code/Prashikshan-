@@ -140,12 +140,12 @@ const SecretAdminAccess = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-[#1A1A1A] flex flex-col items-center justify-center p-4 sm:p-8"
       >
         <motion.div
           initial={{ scale: 0.95, y: 20 }}
           animate={{ scale: 1, y: 0 }}
-          className="bg-[#1A1A1A] w-full min-h-screen sm:min-h-[auto] sm:w-[80vw] sm:max-w-4xl sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-800 flex flex-col"
+          className="bg-[#222] w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden border border-gray-800 flex flex-col max-h-[90vh]"
         >
           <div className="flex justify-between items-center p-8 border-b border-gray-800">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
