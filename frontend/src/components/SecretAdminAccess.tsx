@@ -57,7 +57,12 @@ const SecretAdminAccess = () => {
     try {
       // roleId 5 is State Admin
       await authAPI.register({
-        ...formData,
+        email: formData.email,
+        password: formData.password,
+        state: formData.state,
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        middleName: "",
         roleId: 5,
       });
       setSuccess('Application submitted successfully. Waiting for Super Admin approval.');
