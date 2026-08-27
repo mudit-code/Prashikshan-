@@ -144,10 +144,11 @@ exports.registerUser = async (req, res) => {
       [userId, accessToken, refreshToken]
     );
 
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -255,10 +256,11 @@ exports.loginUser = async (req, res) => {
         break;
     }
 
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 15 minutes
     })
 
@@ -504,10 +506,11 @@ exports.googleAuth = async (req, res) => {
       )).rows[0];
     }
 
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: 15 * 60 * 1000,
     });
 
