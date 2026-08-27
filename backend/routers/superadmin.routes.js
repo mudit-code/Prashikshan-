@@ -10,4 +10,10 @@ const { authMiddleware } = require("../middleware/auth");
 router.get("/state-admins", authMiddleware, superadminController.getStateAdmins);
 router.put("/state-admins/:id/status", authMiddleware, superadminController.updateStateAdminStatus);
 
+// New Routes for Super Admin Features
+router.get("/stats", authMiddleware, superadminController.getSystemStats);
+router.get("/students", authMiddleware, superadminController.getStudents);
+router.get("/employers", authMiddleware, superadminController.getEmployers);
+router.get("/colleges", authMiddleware, superadminController.getColleges);
+
 module.exports = router;
