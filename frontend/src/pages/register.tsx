@@ -14,9 +14,11 @@ import {
   FaGraduationCap,
   FaSpinner,
   FaBriefcase,
-  FaArrowLeft
+  FaArrowLeft,
+  FaGoogle
 } from 'react-icons/fa';
 import { authAPI, rolesAPI, collegeAPI } from '../lib/api';
+import { GoogleLogin } from '@react-oauth/google';
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -181,9 +183,6 @@ const RegisterPage = () => {
           case 1: // Student
             redirectPath = '/student/dashboard';
             break;
-          case 2: // Faculty
-            redirectPath = '/faculty/dashboard';
-            break;
           case 3: // College Admin
             redirectPath = '/college-admin/dashboard';
             break;
@@ -233,6 +232,33 @@ const RegisterPage = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await authAPI.googleAuth({
+        token: credentialResponse.credential,
+        roleId: formData.roleId
+      });
+
+      if (response && response.accessToken) {
+        let redirectPath = '/login-selection';
+        switch (formData.roleId) {
+          case 1: redirectPath = '/student/dashboard'; break;
+          case 3: redirectPath = '/college-admin/dashboard'; break;
+          case 4: redirectPath = '/employer/dashboard'; break;
+          case 5: redirectPath = '/state-admin/dashboard'; break;
+        }
+        alert('Google Registration successful! Logging you in...');
+        router.push(redirectPath);
+      }
+    } catch (err: any) {
+      console.error('Google Registration error:', err);
+      setError(err.response?.data?.error || 'Google Registration failed.');
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl w-full">
@@ -268,6 +294,29 @@ const RegisterPage = () => {
               {error}
             </div>
           )}
+
+          {/* Google Auth Section */}
+          <div className="mb-8 flex flex-col items-center">
+            <p className="text-sm text-gray-600 mb-4 font-medium">Fast & Secure Registration</p>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google Login Failed')}
+              useOneTap
+              theme="filled_blue"
+              shape="rectangular"
+              text="continue_with"
+              size="large"
+            />
+          </div>
+
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or register manually</span>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Role Selection - HIDDEN, controlled via current page context */}
@@ -577,28 +626,6 @@ const RegisterPage = () => {
                     <option value="Ladakh">Ladakh</option>
                     <option value="Jammu and Kashmir">Jammu and Kashmir</option>
                   </select>
-                </div>
-              </div>
-            )}
-
-            {formData.roleId === 2 && (
-              <div>
-                <label htmlFor="facultyCollegeName" className="block text-sm font-semibold text-gray-700 mb-2">
-                  College Name
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaBuilding className="text-gray-400" />
-                  </div>
-                  <input
-                    id="facultyCollegeName"
-                    type="text"
-                    value={formData.collegeName}
-                    onChange={(e) => setFormData({ ...formData, collegeName: e.target.value })}
-                    className="input-field pl-10"
-                    placeholder="Your College Name"
-                    required
-                  />
                 </div>
               </div>
             )}

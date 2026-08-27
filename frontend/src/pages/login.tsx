@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash, FaRocket, FaSpinner, FaArrowLeft } from 'react-icons/fa';
+import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash, FaRocket, FaSpinner, FaArrowLeft, FaGoogle } from 'react-icons/fa';
 import { authAPI } from '../lib/api';
+import { GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -85,6 +86,35 @@ const LoginPage = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const roleMap: any = {
+        Student: 1,
+        "College Admin": 3,
+        Employer: 4,
+        "State Admin": 5,
+      };
+
+      const response = await authAPI.googleAuth({
+        token: credentialResponse.credential,
+        roleId: roleMap[role]
+      });
+
+      if (response && response.accessToken) {
+        // Redirect to unified dashboard
+        alert('Google Sign In successful!');
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      console.error('Google Sign In error:', err);
+      setError(err.response?.data?.error || 'Google Sign In failed.');
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
@@ -147,6 +177,29 @@ const LoginPage = () => {
               {error}
             </div>
           )}
+
+          {/* Google Auth Section */}
+          <div className="mb-6 flex flex-col items-center">
+            <p className="text-sm text-gray-600 mb-4 font-medium">Fast & Secure Sign In</p>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google Login Failed')}
+              useOneTap
+              theme="filled_blue"
+              shape="rectangular"
+              text="signin_with"
+              size="large"
+            />
+          </div>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or sign in with email</span>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}

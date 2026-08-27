@@ -4,11 +4,10 @@ async function listUsers() {
     try {
         const res = await pool.query(`
             SELECT r.id, r.email, r.role, r.create_time,
-                   COALESCE(s.first_name, f.first_name, a.first_name, sa.first_name, e.company_name) as name,
-                   COALESCE(s.last_name, f.last_name, a.last_name, sa.last_name, '') as last_name
+                   COALESCE(s.first_name, a.first_name, sa.first_name, e.company_name) as name,
+                   COALESCE(s.last_name, a.last_name, sa.last_name, '') as last_name
             FROM register r
             LEFT JOIN students s ON r.id = s.id AND r.role = 1
-            LEFT JOIN faculty f ON r.id = f.id AND r.role = 2
             LEFT JOIN admin a ON r.id = a.id AND r.role = 3
             LEFT JOIN employer e ON r.id = e.id AND r.role = 4
             LEFT JOIN state_admin sa ON r.id = sa.id AND r.role = 5
@@ -17,7 +16,6 @@ async function listUsers() {
 
         const roles = {
             1: 'Student',
-            2: 'Faculty',
             3: 'Admin',
             4: 'Employer',
             5: 'State Admin'

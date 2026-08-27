@@ -42,6 +42,22 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ user }) => {
   const [selectedInternship, setSelectedInternship] = useState<number | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const data = await authAPI.getMe();
+      if (data && data.profile) {
+        setProfile(data.profile);
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile', error);
+    }
+  };
 
   useEffect(() => {
     if (activeTab === 'internships') {
@@ -433,6 +449,19 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ user }) => {
                 ))}
               </nav>
             </div>
+          </div>
+        )}
+
+        {!showPostInternship && !showProfileForm && (!profile || !profile.company_name) && (
+          <div className="mb-6 bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500 flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{user?.name || profile?.first_name || 'Employer'}</h2>
+              <p className="text-gray-600">{user?.email || 'employer@example.com'}</p>
+              <p className="text-gray-600">Your company profile is incomplete. Complete it to start hiring.</p>
+            </div>
+            <button onClick={() => setShowProfileForm(true)} className="btn-primary bg-purple-600 hover:bg-purple-700">
+              Complete Profile
+            </button>
           </div>
         )}
 

@@ -4,3 +4,21 @@
 [2025-12-09T11:27:44.948Z] Found ALL: 0
 [2025-12-09T12:01:34.713Z] Fetching ALL internships
 [2025-12-09T12:01:34.787Z] Found ALL: 0
+[2026-06-30T11:03:16.651Z] Fetching ALL internships
+[2026-06-30T11:03:16.658Z] Found ALL: 0
+[2026-06-30T11:03:25.981Z] Fetching ALL internships
+[2026-06-30T11:03:26.060Z] Found ALL: 0
+[2026-06-30T11:05:41.240Z] Fetching for UserID: 754705032
+[2026-06-30T11:05:41.245Z] ERROR (Employer): column a.job_id does not exist
+error: column a.job_id does not exist
+    at D:\projects\Prashikshan-\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async getEmployerInternships (D:\projects\Prashikshan-\backend\controllers\internship.controller.js:41:24)
+[2026-06-30T11:05:43.073Z] Fetching for UserID: 754705032
+[2026-06-30T11:05:43.195Z] ERROR (Employer): column a.job_id does not exist
+error: column a.job_id does not exist
+    at D:\projects\Prashikshan-\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async getEmployerInternships (D:\projects\Prashikshan-\backend\controllers\internship.controller.js:41:24)
+[2026-08-27T13:14:04.869Z] Fetching ALL internships
+[2026-08-27T13:14:04.884Z] Found ALL: 0

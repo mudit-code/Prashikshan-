@@ -91,6 +91,17 @@ export const authAPI = {
     return response.data;
   },
 
+  googleAuth: async (data: { token: string; roleId?: number }) => {
+    const response = await publicApi.post('/auth/google', data);
+    if (response.data.accessToken) {
+      localStorage.setItem('token', response.data.accessToken);
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+    }
+    return response.data;
+  },
+
   logout: async () => {
     await api.post('/auth/logout');
     localStorage.removeItem('token');
@@ -216,7 +227,6 @@ export const rolesAPI = {
     // Student: 1, Company: 2, Admin: 3 (based on typical seeding)
     return [
       { id: 1, name: 'Student' },
-      { id: 2, name: 'Faculty' },
       { id: 3, name: 'Admin' },
       { id: 4, name: 'Employer' },
     ];
@@ -301,10 +311,6 @@ export const coursesAPI = {
     await api.delete(`/courses/${id}`);
   },
 
-  getMyCourses: async () => {
-    const response = await api.get('/faculty/courses');
-    return response.data;
-  },
 };
 
 export { api, publicApi };

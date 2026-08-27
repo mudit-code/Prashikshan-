@@ -1,11 +1,12 @@
 const express = require("express");
-const { registerUser,loginUser,getMe,logoutUser } = require("../controllers/auth.controller");
+const { registerUser,loginUser,getMe,logoutUser, googleAuth } = require("../controllers/auth.controller");
 const { authMiddleware } = require("../middleware/auth");
 
 
 const Authrouter = express.Router();
 Authrouter.post("/register", registerUser);
 Authrouter.post("/login", loginUser);
+Authrouter.post("/google", googleAuth);
 Authrouter.get("/me",authMiddleware, getMe);
 Authrouter.post("/logout",authMiddleware, logoutUser);
 

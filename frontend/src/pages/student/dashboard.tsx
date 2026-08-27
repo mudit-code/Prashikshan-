@@ -359,15 +359,15 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ userId, role, user 
             {/* Profile Section */}
             {!profileLoading && (
               <div className="mb-8">
-                {!profile ? (
+                {(!profile || !profile.college_name) ? (
                   <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500 flex justify-between items-center">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">{user?.name || 'Student Name'}</h2>
+                      <h2 className="text-xl font-bold text-gray-900">{user?.name || profile?.first_name || 'Student Name'}</h2>
                       <p className="text-gray-600">{user?.email || 'student@example.com'}</p>
                       <p className="text-gray-600">Your profile is incomplete. Complete it to apply for internships.</p>
                     </div>
                     <button onClick={() => setShowProfileForm(true)} className="btn-primary">
-                      Add Certifications
+                      Complete Profile
                     </button>
                   </div>
                 ) : (

@@ -1,6 +1,10 @@
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 const { generateAccessToken, generateRefreshToken } = require('../utils/jwt')
+const { OAuth2Client } = require('google-auth-library');
+
+// We will use a fallback client ID if none is provided, but frontend needs the real one to generate the token anyway.
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy-client-id');
 
 exports.registerUser = async (req, res) => {
   const {
@@ -75,16 +79,6 @@ exports.registerUser = async (req, res) => {
         );
         break;
 
-      case 2: // Faculty
-        await pool.query(
-          `
-          INSERT INTO faculty (id, first_name, mid_name, last_name, college_name)
-          VALUES ($1, $2, $3, $4, $5)
-        `,
-          [userId, firstname, middleName, lastname, collegeName]
-        );
-        break;
-
       case 3: // Admin
         await pool.query(
           `
@@ -142,7 +136,11 @@ exports.registerUser = async (req, res) => {
 
     await pool.query(
       `INSERT INTO token (token_id, accesstoken, refreshtoken, created_at)
-       VALUES ($1, $2, $3, NOW())`,
+       VALUES ($1, $2, $3, NOW())
+       ON CONFLICT (token_id) DO UPDATE 
+       SET accesstoken = EXCLUDED.accesstoken, 
+           refreshtoken = EXCLUDED.refreshtoken, 
+           created_at = NOW()`,
       [userId, accessToken, refreshToken]
     );
 
@@ -214,10 +212,13 @@ exports.loginUser = async (req, res) => {
       role: roleName
     });
 
-    // Store tokens
     await pool.query(
       `INSERT INTO token (token_id, accesstoken, refreshtoken, created_at)
-       VALUES ($1, $2, $3, NOW())`,
+       VALUES ($1, $2, $3, NOW())
+       ON CONFLICT (token_id) DO UPDATE 
+       SET accesstoken = EXCLUDED.accesstoken, 
+           refreshtoken = EXCLUDED.refreshtoken, 
+           created_at = NOW()`,
       [user.id, accessToken, refreshToken]
     );
 
@@ -227,13 +228,6 @@ exports.loginUser = async (req, res) => {
       case 1:
         profile = (await pool.query(
           "SELECT first_name, mid_name, last_name, college_name FROM students WHERE id = $1",
-          [user.id]
-        )).rows[0];
-        break;
-
-      case 2:
-        profile = (await pool.query(
-          "SELECT first_name, mid_name, last_name, college_name FROM faculty WHERE id = $1",
           [user.id]
         )).rows[0];
         break;
@@ -302,7 +296,6 @@ exports.getMe = async (req, res) => {
 
     const roleNames = {
       1: "student",
-      2: "faculty",
       3: "admin",
       3: "admin",
       4: "employer",
@@ -316,15 +309,6 @@ exports.getMe = async (req, res) => {
         profile = (
           await pool.query(
             "SELECT first_name, mid_name, last_name, college_name FROM students WHERE id = $1",
-            [user.id]
-          )
-        ).rows[0];
-        break;
-
-      case 2:
-        profile = (
-          await pool.query(
-            "SELECT first_name, mid_name, last_name, college_name FROM faculty WHERE id = $1",
             [user.id]
           )
         ).rows[0];
@@ -394,5 +378,150 @@ exports.logoutUser = async (req, res) => {
   } catch (err) {
     console.error("LOGOUT ERROR:", err);
     return res.status(500).json({ error: "Server error during logout" });
+  }
+};
+
+exports.googleAuth = async (req, res) => {
+  const { token, roleId } = req.body;
+  
+  if (!token) {
+    return res.status(400).json({ error: "Google token is required" });
+  }
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+    });
+    
+    const payload = ticket.getPayload();
+    const { sub, email, given_name, family_name, picture } = payload;
+    
+    // Check if user exists by sub
+    let userResult = await pool.query(
+      "SELECT id, email, role, auth_provider FROM register WHERE provider_id = $1",
+      [sub]
+    );
+
+    let user;
+
+    if (userResult.rows.length > 0) {
+      // User exists with this Google account
+      user = userResult.rows[0];
+    } else {
+      // Check if email exists with local auth
+      const emailCheck = await pool.query(
+        "SELECT id, auth_provider FROM register WHERE email = $1",
+        [email]
+      );
+
+      if (emailCheck.rows.length > 0) {
+        return res.status(400).json({ error: "This email is already registered using a password. Please log in manually." });
+      }
+
+      // If no roleId provided during creation, we can't create
+      if (!roleId) {
+        return res.status(400).json({ error: "Role is required for new Google signups" });
+      }
+
+      // Create new user
+      function generateRandomId() {
+        return Math.floor(100000000 + Math.random() * 900000000);
+      }
+
+      let newUserId;
+      while (true) {
+        const tempId = generateRandomId();
+        const check = await pool.query("SELECT id FROM register WHERE id = $1", [tempId]);
+        if (check.rows.length === 0) {
+          newUserId = tempId;
+          break;
+        }
+      }
+
+      await pool.query(
+        `INSERT INTO register (id, email, password, role, auth_provider, provider_id, profile_completed, create_time)
+         VALUES ($1, $2, NULL, $3, 'google', $4, false, NOW())`,
+        [newUserId, email, roleId, sub]
+      );
+
+      // Insert into role-specific tables with what we have
+      const profileData = JSON.stringify({ avatar: picture });
+
+      if (Number(roleId) === 1) { // Student
+        await pool.query(
+          `INSERT INTO students (id, first_name, last_name, profile_data)
+           VALUES ($1, $2, $3, $4)`,
+          [newUserId, given_name || '', family_name || '', profileData]
+        );
+      } else if (Number(roleId) === 4) { // Employer
+        await pool.query(
+          `INSERT INTO employer (id, first_name, last_name, profile_data)
+           VALUES ($1, $2, $3, $4)`,
+          [newUserId, given_name || '', family_name || '', profileData]
+        );
+      } else {
+        return res.status(400).json({ error: "Invalid role for Google Auth" });
+      }
+
+      user = { id: newUserId, role: roleId, email };
+    }
+
+    // Role mapping
+    const roleNames = {
+      1: "Student",
+      3: "Admin",
+      4: "Employer",
+      5: "State Admin"
+    };
+
+    const roleName = roleNames[Number(user.role)];
+
+    const accessToken = generateAccessToken({ userId: user.id, role: roleName });
+    const refreshToken = generateRefreshToken({ userId: user.id, role: roleName });
+
+    await pool.query(
+      `INSERT INTO token (token_id, accesstoken, refreshtoken, created_at)
+       VALUES ($1, $2, $3, NOW())
+       ON CONFLICT (token_id) DO UPDATE 
+       SET accesstoken = EXCLUDED.accesstoken, 
+           refreshtoken = EXCLUDED.refreshtoken, 
+           created_at = NOW()`,
+      [user.id, accessToken, refreshToken]
+    );
+
+    // Fetch profile snippet
+    let profile = {};
+    if (Number(user.role) === 1) {
+      profile = (await pool.query(
+        "SELECT first_name, mid_name, last_name, college_name FROM students WHERE id = $1",
+        [user.id]
+      )).rows[0];
+    } else if (Number(user.role) === 4) {
+      profile = (await pool.query(
+        "SELECT company_name FROM employer WHERE id = $1",
+        [user.id]
+      )).rows[0];
+    }
+
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    return res.json({
+      message: "Google Auth successful",
+      userId: user.id,
+      roleName,
+      profile,
+      accessToken,
+      refreshToken
+    });
+
+  } catch (err) {
+    console.error("GOOGLE AUTH ERROR:", err);
+    return res.status(500).json({ error: "Server error during Google auth" });
   }
 };

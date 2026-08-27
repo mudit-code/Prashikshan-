@@ -2,7 +2,6 @@ const pool = require("../config/db");
 
 const ROLE_MAP = {
   1: "Student",
-  2: "Faculty",
   3: "Admin",
   4: "Employer",
 };
@@ -35,9 +34,6 @@ exports.getUserProfile = async (req, res) => {
     switch (roleId) {
       case 1:
         roleQuery = `SELECT * FROM students WHERE id = $1`;
-        break;
-      case 2:
-        roleQuery = `SELECT * FROM faculty WHERE id = $1`;
         break;
       case 3:
         roleQuery = `SELECT * FROM admin WHERE id = $1`;

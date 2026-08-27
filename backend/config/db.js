@@ -1,18 +1,23 @@
 require("dotenv").config();
 const { Pool } = require("pg");
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  max: 10,                // max connections in pool
-  idleTimeoutMillis: 30000,
-  ssl: {
-    rejectUnauthorized: false, // Aiven requires SSL
-  },
-});
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      max: 10,
+      idleTimeoutMillis: 30000,
+    }
+  : {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      max: 10,
+      idleTimeoutMillis: 30000,
+    };
+
+const pool = new Pool(poolConfig);
 
 pool.on("connect", () => {
   console.log("PostgreSQL pool connected");
