@@ -10,6 +10,7 @@ const profilerouter = require("./routers/userProfile.route");
 const employerRouter = require("./routers/employer.routes");
 const internshipRouter = require("./routers/internship.routes");
 const logbookRouter = require("./routers/logbook.routes");
+const superadminRouter = require("./routers/superadmin.routes");
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use("/api/company", employerRouter);
 app.use("/internships", internshipRouter);
 app.use("/logbooks", logbookRouter);
 app.use("/profile", profilerouter);
+app.use("/api/superadmin", superadminRouter);
 
 app.get("/", async (req, res) => {
   try {

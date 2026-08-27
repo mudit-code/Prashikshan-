@@ -87,7 +87,6 @@ const RegisterPage = () => {
     { id: 1, name: 'Student', label: 'Student', icon: FaGraduationCap },
     { id: 3, name: 'College Admin', label: 'College Admin', icon: FaUniversity },
     { id: 4, name: 'Employer', label: 'Employer', icon: FaBriefcase },
-    { id: 5, name: 'State Admin', label: 'State Admin', icon: FaUniversity },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

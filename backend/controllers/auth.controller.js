@@ -121,6 +121,13 @@ exports.registerUser = async (req, res) => {
         return res.status(400).json({ error: "Invalid roleId provided" });
     }
 
+    // Special case for State Admin: Don't auto-login, wait for approval
+    if (Number(roleId) === 5) {
+      return res.json({
+        message: "State Admin registration successful. Pending Super Admin approval."
+      });
+    }
+
     // 6. Generate Tokens (Auto-Login)
     const roleNames = {
       1: "Student",
@@ -195,9 +202,9 @@ exports.loginUser = async (req, res) => {
       1: "Student",
       2: "Faculty",
       3: "Admin",
-      3: "Admin",
       4: "Employer",
-      5: "State Admin"
+      5: "State Admin",
+      6: "Super Admin"
     };
 
     const roleName = roleNames[user.role];
@@ -249,10 +256,19 @@ exports.loginUser = async (req, res) => {
         break;
 
       case 5:
-        profile = (await pool.query(
-          "SELECT first_name, mid_name, last_name, state FROM state_admin WHERE id = $1",
+        const saResult = await pool.query(
+          "SELECT first_name, mid_name, last_name, state, status FROM state_admin WHERE id = $1",
           [user.id]
-        )).rows[0];
+        );
+        if (saResult.rows[0].status === 'pending') {
+          return res.status(403).json({ error: "Your account is pending verification from the Super Admin." });
+        }
+        profile = saResult.rows[0];
+        break;
+      
+      case 6: // Super Admin
+        // Super admins have no specific profile table for now
+        profile = { role: 'Super Admin' };
         break;
     }
 

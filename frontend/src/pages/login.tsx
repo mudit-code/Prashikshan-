@@ -27,7 +27,7 @@ const LoginPage = () => {
       }
 
       const roleStr = roleParam as string;
-      const validRoles = ['Student', 'College Admin', 'Employer', 'State Admin'];
+      const validRoles = ['Student', 'College Admin', 'Employer'];
 
       if (validRoles.includes(roleStr)) {
         setRole(roleStr as any);
@@ -155,7 +155,6 @@ const LoginPage = () => {
                 { value: 'Student', label: 'Student' },
                 { value: 'College Admin', label: 'College Admin' },
                 { value: 'Employer', label: 'Employer' },
-                { value: 'State Admin', label: 'State Admin' },
               ].map((r) => (
                 <button
                   key={r.value}

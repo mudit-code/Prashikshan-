@@ -4,6 +4,7 @@ import Layout from '../components/layout/Layout';
 
 import { LoadingProvider } from '../components/GlobalLoader';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import SecretAdminAccess from '../components/SecretAdminAccess';
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'dummy-client-id';
 function MyApp({ Component, pageProps }: AppProps) {
@@ -11,6 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <LoadingProvider>
         <Layout>
+          <SecretAdminAccess />
           <Component {...pageProps} />
         </Layout>
       </LoadingProvider>

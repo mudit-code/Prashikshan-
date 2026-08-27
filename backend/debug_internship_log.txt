@@ -22,3 +22,5 @@ error: column a.job_id does not exist
     at async getEmployerInternships (D:\projects\Prashikshan-\backend\controllers\internship.controller.js:41:24)
 [2026-08-27T13:14:04.869Z] Fetching ALL internships
 [2026-08-27T13:14:04.884Z] Found ALL: 0
+[2026-08-27T18:06:18.186Z] Fetching ALL internships
+[2026-08-27T18:06:18.805Z] Found ALL: 0

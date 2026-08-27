@@ -15,7 +15,6 @@ const SelectRolePage = () => {
         { id: 'Student', label: 'Student', icon: FaGraduationCap, description: 'Apply for internships, track progress, and build your career.' },
         { id: 'College Admin', label: 'College Admin', icon: FaUniversity, description: 'Oversee the entire platform, manage colleges, and generate reports.' },
         { id: 'Employer', label: 'Employer', icon: FaBriefcase, description: 'Post internships, review applications, and hire top talent.' },
-        { id: 'State Admin', label: 'State Admin', icon: FaUniversity, description: 'Oversee state-level data, manage colleges, and monitor performance.' },
     ];
 
     return (

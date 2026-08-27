@@ -15,7 +15,6 @@ const LoginSelectionPage = () => {
         { id: 'Student', label: 'Student', icon: FaGraduationCap, description: 'Access your learning dashboard and internship applications.' },
         { id: 'College Admin', label: 'College Admin', icon: FaUniversity, description: 'System administration and college management.' },
         { id: 'Employer', label: 'Employer', icon: FaBriefcase, description: 'Post jobs and manage candidates.' },
-        { id: 'State Admin', label: 'State Admin', icon: FaUniversity, description: 'Oversee state-level data and manage colleges.' },
     ];
 
     return (

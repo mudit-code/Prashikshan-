@@ -65,7 +65,8 @@ CREATE TABLE state_admin (
     first_name VARCHAR(255) NOT NULL,
     mid_name VARCHAR(255),
     last_name VARCHAR(255) NOT NULL,
-    state VARCHAR(255) NOT NULL
+    state VARCHAR(255) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending'
 );
 
 -- 3. Core Entities
