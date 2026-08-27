@@ -24,11 +24,11 @@ const SuperAdminDashboard = () => {
     setLoading(true);
     try {
       const [statsRes, stateAdminsRes, studentsRes, employersRes, collegesRes] = await Promise.all([
-        api.get('/superadmin/stats'),
-        api.get('/superadmin/state-admins'),
-        api.get('/superadmin/students'),
-        api.get('/superadmin/employers'),
-        api.get('/superadmin/colleges')
+        api.get('/api/superadmin/stats'),
+        api.get('/api/superadmin/state-admins'),
+        api.get('/api/superadmin/students'),
+        api.get('/api/superadmin/employers'),
+        api.get('/api/superadmin/colleges')
       ]);
 
       setStats(statsRes.data);
@@ -45,7 +45,7 @@ const SuperAdminDashboard = () => {
 
   const handleUpdateStatus = async (id: string, status: 'approved' | 'rejected') => {
     try {
-      await api.put(`/superadmin/state-admins/${id}/status`, { status });
+      await api.put(`/api/superadmin/state-admins/${id}/status`, { status });
       setStateAdmins(prev => prev.map(admin => admin.id === id ? { ...admin, status } : admin));
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to update status');
