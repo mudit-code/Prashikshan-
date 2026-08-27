@@ -295,28 +295,32 @@ const RegisterPage = () => {
             </div>
           )}
 
-          {/* Google Auth Section */}
-          <div className="mb-8 flex flex-col items-center">
-            <p className="text-sm text-gray-600 mb-4 font-medium">Fast & Secure Registration</p>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => setError('Google Login Failed')}
-              useOneTap
-              theme="filled_blue"
-              shape="rectangular"
-              text="continue_with"
-              size="large"
-            />
-          </div>
+          {/* Google Auth Section - Hidden for Admin roles that require manual verification */}
+          {formData.roleId !== 3 && formData.roleId !== 5 && (
+            <>
+              <div className="mb-8 flex flex-col items-center">
+                <p className="text-sm text-gray-600 mb-4 font-medium">Fast & Secure Registration</p>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError('Google Login Failed')}
+                  useOneTap
+                  theme="filled_blue"
+                  shape="rectangular"
+                  text="continue_with"
+                  size="large"
+                />
+              </div>
 
-          <div className="relative mb-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or register manually</span>
-            </div>
-          </div>
+              <div className="relative mb-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or register manually</span>
+                </div>
+              </div>
+            </>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Role Selection - HIDDEN, controlled via current page context */}

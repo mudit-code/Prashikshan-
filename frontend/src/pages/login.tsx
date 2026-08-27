@@ -178,28 +178,32 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* Google Auth Section */}
-          <div className="mb-6 flex flex-col items-center">
-            <p className="text-sm text-gray-600 mb-4 font-medium">Fast & Secure Sign In</p>
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => setError('Google Login Failed')}
-              useOneTap
-              theme="filled_blue"
-              shape="rectangular"
-              text="signin_with"
-              size="large"
-            />
-          </div>
+          {/* Google Auth Section - Hidden for Admin roles */}
+          {role !== 'College Admin' && role !== 'State Admin' && (
+            <>
+              <div className="mb-6 flex flex-col items-center">
+                <p className="text-sm text-gray-600 mb-4 font-medium">Fast & Secure Sign In</p>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError('Google Login Failed')}
+                  useOneTap
+                  theme="filled_blue"
+                  shape="rectangular"
+                  text="signin_with"
+                  size="large"
+                />
+              </div>
 
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or sign in with email</span>
-            </div>
-          </div>
+              <div className="relative mb-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or sign in with email</span>
+                </div>
+              </div>
+            </>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
