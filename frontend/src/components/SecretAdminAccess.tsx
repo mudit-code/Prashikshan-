@@ -16,7 +16,7 @@ const states = [
 
 const SecretAdminAccess = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'stateAdmin' | 'superAdmin'>('stateAdmin');
+  const [activeTab, setActiveTab] = useState<'stateAdmin' | 'stateAdminLogin' | 'superAdmin'>('stateAdmin');
   const router = useRouter();
 
   // Form states
@@ -103,6 +103,35 @@ const SecretAdminAccess = () => {
     }
   };
 
+  const handleStateAdminLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await authAPI.login({
+        email: formData.email,
+        password: formData.password
+      });
+
+      if (response.roleName.toLowerCase() !== 'state admin') {
+        setError('Unauthorized role');
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("token", response.accessToken);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      
+      setIsOpen(false);
+      router.push('/state-admin/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Login failed. Note: Your application may still be pending.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -111,38 +140,44 @@ const SecretAdminAccess = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
       >
         <motion.div
           initial={{ scale: 0.95, y: 20 }}
           animate={{ scale: 1, y: 0 }}
-          className="bg-[#1A1A1A] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-gray-800"
+          className="bg-[#1A1A1A] w-full min-h-screen sm:min-h-[auto] sm:w-[80vw] sm:max-w-4xl sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-800 flex flex-col"
         >
-          <div className="flex justify-between items-center p-6 border-b border-gray-800">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <div className="flex justify-between items-center p-8 border-b border-gray-800">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
               <FaLock className="text-yellow-500" /> Secure Portal
             </h2>
             <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white transition-colors">
-              <FaTimes size={20} />
+              <FaTimes size={24} />
             </button>
           </div>
 
-          <div className="flex border-b border-gray-800">
+          <div className="flex border-b border-gray-800 overflow-x-auto">
             <button
               onClick={() => { setActiveTab('stateAdmin'); setError(''); setSuccess(''); }}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'stateAdmin' ? 'bg-[#2A2A2A] text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400 hover:text-gray-200'}`}
+              className={`flex-1 min-w-[200px] py-4 text-base font-medium transition-colors ${activeTab === 'stateAdmin' ? 'bg-[#2A2A2A] text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400 hover:text-gray-200'}`}
             >
               State Admin (Apply)
             </button>
             <button
+              onClick={() => { setActiveTab('stateAdminLogin'); setError(''); setSuccess(''); }}
+              className={`flex-1 min-w-[200px] py-4 text-base font-medium transition-colors ${activeTab === 'stateAdminLogin' ? 'bg-[#2A2A2A] text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400 hover:text-gray-200'}`}
+            >
+              State Admin (Login)
+            </button>
+            <button
               onClick={() => { setActiveTab('superAdmin'); setError(''); setSuccess(''); }}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === 'superAdmin' ? 'bg-[#2A2A2A] text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400 hover:text-gray-200'}`}
+              className={`flex-1 min-w-[200px] py-4 text-base font-medium transition-colors ${activeTab === 'superAdmin' ? 'bg-[#2A2A2A] text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400 hover:text-gray-200'}`}
             >
               Super Admin (Login)
             </button>
           </div>
 
-          <div className="p-6">
+          <div className="p-8 overflow-y-auto max-h-[70vh]">
             {error && <div className="mb-4 p-3 bg-red-900/50 border border-red-500/50 rounded text-red-200 text-sm">{error}</div>}
             {success && <div className="mb-4 p-3 bg-green-900/50 border border-green-500/50 rounded text-green-200 text-sm">{success}</div>}
 
@@ -177,17 +212,31 @@ const SecretAdminAccess = () => {
                   {loading ? <FaSpinner className="animate-spin" /> : 'Submit Application'}
                 </button>
               </form>
+            ) : activeTab === 'stateAdminLogin' ? (
+              <form onSubmit={handleStateAdminLoginSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2">State Admin Email</label>
+                  <input type="email" required name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-[#2A2A2A] border border-gray-700 rounded p-3 text-white" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2">Password</label>
+                  <input type="password" required name="password" value={formData.password} onChange={handleInputChange} className="w-full bg-[#2A2A2A] border border-gray-700 rounded p-3 text-white" />
+                </div>
+                <button disabled={loading} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded mt-6 transition-colors flex items-center justify-center gap-2">
+                  {loading ? <FaSpinner className="animate-spin" /> : <><FaLock /> Login</>}
+                </button>
+              </form>
             ) : (
-              <form onSubmit={handleSuperAdminSubmit} className="space-y-4">
+              <form onSubmit={handleSuperAdminSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Super Admin Email</label>
-                  <input type="email" required name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-[#2A2A2A] border border-gray-700 rounded p-2 text-white" />
+                  <label className="block text-sm text-gray-400 mb-2">Super Admin Email</label>
+                  <input type="email" required name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-[#2A2A2A] border border-gray-700 rounded p-3 text-white" />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Master Password</label>
-                  <input type="password" required name="password" value={formData.password} onChange={handleInputChange} className="w-full bg-[#2A2A2A] border border-gray-700 rounded p-2 text-white" />
+                  <label className="block text-sm text-gray-400 mb-2">Master Password</label>
+                  <input type="password" required name="password" value={formData.password} onChange={handleInputChange} className="w-full bg-[#2A2A2A] border border-gray-700 rounded p-3 text-white" />
                 </div>
-                <button disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 transition-colors flex items-center justify-center gap-2">
+                <button disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded mt-6 transition-colors flex items-center justify-center gap-2">
                   {loading ? <FaSpinner className="animate-spin" /> : <><FaUserShield /> Authenticate</>}
                 </button>
               </form>
