@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUserShield, FaCheck, FaTimes, FaSpinner, FaUsers, FaBuilding, FaUniversity, FaChartLine, FaMapMarkedAlt } from 'react-icons/fa';
+import { FaUserShield, FaCheck, FaTimes, FaSpinner, FaUsers, FaBuilding, FaUniversity, FaChartLine, FaMapMarkedAlt, FaSignOutAlt } from 'react-icons/fa';
 import withAuth from '../../components/withAuth';
 import { api } from '../../lib/api';
 
 const SuperAdminDashboard = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'stateAdmins' | 'students' | 'employers' | 'colleges'>('overview');
   
   const [stats, setStats] = useState({ students: 0, employers: 0, colleges: 0, stateAdmins: 0 });
@@ -22,6 +24,7 @@ const SuperAdminDashboard = () => {
 
   const fetchAllData = async () => {
     setLoading(true);
+    setError('');
     try {
       const [statsRes, stateAdminsRes, studentsRes, employersRes, collegesRes] = await Promise.all([
         api.get('/api/superadmin/stats'),
@@ -50,6 +53,12 @@ const SuperAdminDashboard = () => {
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to update status');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    router.push('/');
   };
 
   if (loading) {
@@ -87,6 +96,12 @@ const SuperAdminDashboard = () => {
               <p className="text-sm text-gray-400">Super Admin Privileges</p>
             </div>
           </div>
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors font-medium"
+          >
+            <FaSignOutAlt /> Logout
+          </button>
         </div>
       </div>
 
