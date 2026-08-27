@@ -78,6 +78,7 @@ export const authAPI = {
     aisheCode?: string;
     collegeWebsite?: string;
     companyWebsite?: string;
+    state?: string;
   }) => {
     const response = await publicApi.post('/auth/register', data);
     return response.data;

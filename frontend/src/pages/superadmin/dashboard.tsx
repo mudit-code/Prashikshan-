@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaUserShield, FaCheck, FaTimes, FaSpinner } from 'react-icons/fa';
 import withAuth from '../../components/withAuth';
-import api from '../../lib/api';
+import { api } from '../../lib/api';
 
 const SuperAdminDashboard = () => {
   const [stateAdmins, setStateAdmins] = useState<any[]>([]);
